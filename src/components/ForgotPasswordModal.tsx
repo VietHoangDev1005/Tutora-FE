@@ -120,8 +120,8 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({
             toast.warning("Vui lòng nhập đầy đủ mật khẩu mới!");
             return;
         }
-        if (newPassword.length < 6) {
-            toast.error("Mật khẩu phải có ít nhất 6 ký tự.");
+        if (newPassword.length < 8) {
+            toast.error("Mật khẩu phải có ít nhất 8 ký tự.");
             return;
         }
         if (newPassword !== confirmPassword) {

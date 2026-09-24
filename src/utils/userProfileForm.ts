@@ -24,8 +24,30 @@ export function toDateInputValue(raw: string | null | undefined): string {
   return raw.slice(0, 10);
 }
 
+/** Gia sư phải từ 18 tuổi (cùng quy định với BE — AgeHelper.MinTutorAge — và app ghi âm). */
+export const TUTOR_MIN_AGE = 18;
+
+/** Số tuổi tròn tính tới hôm nay theo ngày sinh yyyy-MM-dd. */
+export function ageFromBirthdate(birthdate: string, today: Date = new Date()): number {
+  const [y, m, d] = birthdate.split('-').map(Number);
+  let age = today.getFullYear() - y;
+  if (today.getMonth() + 1 < m || (today.getMonth() + 1 === m && today.getDate() < d)) age--;
+  return age;
+}
+
+/** Ngày sinh muộn nhất (yyyy-MM-dd) vẫn đủ [minAge] tuổi — dùng cho `max` của input date. */
+export function latestBirthdateForAge(minAge: number, today: Date = new Date()): string {
+  const d = new Date(today.getFullYear() - minAge, today.getMonth(), today.getDate());
+  if (d.getMonth() !== today.getMonth()) d.setDate(0); // 29/02 → 28/02 năm thường
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
 /** Validate khớp BE UpdateUserRequest. Trả map lỗi theo field (rỗng = hợp lệ). */
-export function validateUserProfileForm(form: UserProfileFormValues): UserProfileFieldErrors {
+export function validateUserProfileForm(
+  form: UserProfileFormValues,
+  options: { minAge?: number } = {},
+): UserProfileFieldErrors {
   const errors: UserProfileFieldErrors = {};
 
   const fullname = form.fullname.trim();
@@ -38,6 +60,8 @@ export function validateUserProfileForm(form: UserProfileFormValues): UserProfil
     errors.birthdate = 'Ngày sinh không hợp lệ (định dạng yyyy-MM-dd).';
   } else if (new Date(form.birthdate) > new Date()) {
     errors.birthdate = 'Ngày sinh không được ở tương lai.';
+  } else if (options.minAge != null && ageFromBirthdate(form.birthdate) < options.minAge) {
+    errors.birthdate = `Phải từ ${options.minAge} tuổi trở lên.`;
   }
 
   const address = form.address.trim();

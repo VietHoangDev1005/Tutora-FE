@@ -143,7 +143,7 @@ const ResetPasswordPage: React.FC = () => {
 
     const getPasswordStrength = (password: string) => {
         if (password.length === 0) return { strength: "", color: "", width: "0%" };
-        if (password.length < 6) return { strength: "Yếu", color: "#631b1b", width: "33%" };
+        if (password.length < 8) return { strength: "Yếu", color: "#631b1b", width: "33%" };
         if (password.length < 10) return { strength: "Trung bình", color: "#d4b483", width: "66%" };
         return { strength: "Mạnh", color: "#3d4a3e", width: "100%" };
     };
@@ -161,8 +161,8 @@ const ResetPasswordPage: React.FC = () => {
             return;
         }
 
-        if (newPassword.length < 6) {
-            toast.error("Mật khẩu phải có ít nhất 6 ký tự");
+        if (newPassword.length < 8) {
+            toast.error("Mật khẩu phải có ít nhất 8 ký tự");
             return;
         }
 

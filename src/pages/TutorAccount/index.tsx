@@ -9,6 +9,8 @@ import { formatDateTime } from '../../utils/formatters';
 import { PageContainer } from '../../components/shared';
 import {
     validateUserProfileForm,
+    TUTOR_MIN_AGE,
+    latestBirthdateForAge,
     mapApiFieldErrors,
     toDateInputValue,
     type UserProfileFieldErrors,
@@ -155,7 +157,7 @@ const TutorAccount = () => {
         if (!profile) return;
 
         // BE yêu cầu đủ tất cả các trường — validate trước để báo rõ field thiếu/sai.
-        const fieldErrors = validateUserProfileForm(form);
+        const fieldErrors = validateUserProfileForm(form, { minAge: TUTOR_MIN_AGE });
         if (Object.keys(fieldErrors).length > 0) {
             setErrors(fieldErrors);
             toast.warning('Vui lòng điền đầy đủ và đúng các thông tin bắt buộc.');
@@ -567,7 +569,7 @@ const TutorAccount = () => {
                                     }}
                                     type="date"
                                     value={form.birthdate}
-                                    max={new Date().toISOString().slice(0, 10)}
+                                    max={latestBirthdateForAge(TUTOR_MIN_AGE)}
                                     onChange={e => updateField('birthdate', e.target.value)}
                                     disabled={identityLocked}
                                 />
